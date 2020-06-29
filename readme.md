@@ -1,0 +1,20 @@
+# StoryBooks
+## Environment
+
+Create a '.env' file on root folder with this variables. Replace 'XXXX' for your values.
+
+```sh
+# MongoDB Config
+MONGO_INITDB_ROOT_USERNAME=XXXX
+MONGO_INITDB_ROOT_PASSWORD=XXXX
+MONGO_INITDB_DATABASE=XXXX
+MONGO_NON_ROOT_USERNAME=XXXX
+MONGO_NON_ROOT_PASSWORD=XXXX
+
+# Server Config
+PORT=XXXX
+SESSION_COOKIE_NAME=XXXX
+SESSION_SECRET=XXXX
+MONGO_URI=mongodb://${MONGO_NON_ROOT_USERNAME}:${MONGO_NON_ROOT_PASSWORD}@localhost:27017/${MONGO_INITDB_DATABASE}?retryWrites=true&w=majority
+
+```

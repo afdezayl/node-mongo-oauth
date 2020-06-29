@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css"
+        integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container login-container">
+        <div class="card">
+            <div class="card-content">{{{body}}}</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>    
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>    
+    <script src="https://www.gstatic.com/firebasejs/7.15.4/firebase-auth.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYYQxY9Gnfj29zO8SY_9NCpWxKIq4lm8A",
+            authDomain: "storybook-d7616.firebaseapp.com",
+            /*databaseURL: "https://storybook-d7616.firebaseio.com",
+            projectId: "storybook-d7616",
+            storageBucket: "storybook-d7616.appspot.com",
+            messagingSenderId: "931377479568",
+            appId: "1:931377479568:web:8661285d5b33dd900bbd15"*/
+        };
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        if (loginBtn) {
+            loginBtn.addEventListener('click', signIn);
+        }
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', logout);
+        }
+
+        async function signIn() {
+            try {
+                const result = await app.auth().signInWithPopup(provider);                
+                const idToken = await result?.user?.getIdToken() ?? '';
+
+                const r = await fetch('/api/auth/login', {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ idToken })
+                });
+
+                if (r.status === 200) {
+                    window.location.assign('/dashboard');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function logout() {
+            try {
+                console.log(app.auth());
+                await app.auth().signOut();
+                console.log('log out...')
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+
+</html>
