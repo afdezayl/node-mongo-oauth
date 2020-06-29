@@ -8,6 +8,13 @@ import dotenvExpand from 'dotenv-expand';
 import morgan from 'morgan';
 import path from 'path';
 import expressHandlebars from 'express-handlebars';
+import {
+  formatDate,
+  stripTags,
+  truncate,
+  editIcon,
+  select,
+} from './views/helpers';
 
 import firebase from 'firebase-admin';
 import { connectDB } from './config/db';
@@ -41,6 +48,7 @@ app.use(
   })
 );
 
+
 // Logger
 if (process.env['NODE_ENV'] === 'development') {
   app.use(morgan('dev'));
@@ -53,12 +61,20 @@ const fireApp = firebase.initializeApp({
 });
 
 // Template engine
+
 app.set('views', './src/views');
 app.engine(
   '.hbs',
   expressHandlebars({
     defaultLayout: 'main',
     extname: '.hbs',
+    helpers: {
+      formatDate: formatDate,
+      stripTags: stripTags,
+      truncate: truncate,
+      editIcon: editIcon,
+      select: select,
+    },
   })
 );
 app.set('view engine', '.hbs');

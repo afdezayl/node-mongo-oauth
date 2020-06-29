@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import User from './models/User';
 import firebase from 'firebase-admin';
 
 export const ensureValidSession = async (
@@ -7,10 +8,12 @@ export const ensureValidSession = async (
   next: NextFunction
 ) => {
   const sessionCookie = req?.session?.token;
-  const isValidSession = await verifySession(sessionCookie);
-  if (!isValidSession) {
+  const claims = await verifySession(sessionCookie);
+  const db_user = await User.findOne({ uid: claims?.uid });
+  if (!claims) {
     return res.redirect('/');
   }
+  req.user = { ...claims, db_user };
   next();
 };
 
@@ -42,15 +45,19 @@ export const checkTokenAuth = async (
   }
 };
 
-async function verifySession(sessionCookie: string): Promise<boolean> {
+async function verifySession(
+  sessionCookie: string
+): Promise<firebase.auth.DecodedIdToken | null> {
   if (!sessionCookie) {
-    return false;
+    return null;
   }
 
   try {
-    await firebase.auth().verifySessionCookie(sessionCookie, true);
-    return true;
+    const claims = await firebase
+      .auth()
+      .verifySessionCookie(sessionCookie, true);
+    return claims;
   } catch (err) {
-    return false;
+    return null;
   }
 }

@@ -1,10 +1,8 @@
 import { Router } from 'express';
-import { authRoutes } from '../auth';
+import { authRouter } from '../api/auth/routes';
+// import { storiesRouter } from '../api/stories/routes';
 
 export const apiRouter = Router();
 
-// auth
-apiRouter.use('/auth', authRoutes);
-
-// Stories
-//apiRouter.use('/stories', authRoutes);
+apiRouter.use('/auth', authRouter);
+// apiRouter.use('/stories', storiesRouter);

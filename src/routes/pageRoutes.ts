@@ -1,5 +1,8 @@
-import { Router } from 'express';
-import { ensureValidSession, ensureGuestSession } from '../auth/utils';
+import { Router, request } from 'express';
+import { ensureValidSession, ensureGuestSession } from '../api/auth/utils';
+import Story from '../api/stories/models/Story';
+
+import { storiesRouter } from '../api/stories/routes';
 
 export const pageRouter = Router();
 
@@ -8,8 +11,20 @@ pageRouter.get('/', ensureGuestSession, (req, res) => {
   res.render('login', { layout: 'login' });
 });
 
-pageRouter.get('/dashboard', ensureValidSession, (req, res) => {
-  res.render('dashboard');
+pageRouter.use('/stories', storiesRouter);
+
+pageRouter.get('/dashboard', ensureValidSession, async (req, res) => {
+  const user = req.user;
+  try {
+    const stories = await Story.find({ user: user?.db_user._id }).lean();
+    res.render('dashboard', {
+      name: req?.user!.name ?? '',
+      stories,
+    });
+  } catch (err) {
+    console.error(err);
+    res.render('error/500');
+  }
 });
 
 pageRouter.get('/logout', async (req, res) => {
