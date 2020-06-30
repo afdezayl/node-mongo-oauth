@@ -10,11 +10,12 @@ export const ensureValidSession = async (
   const sessionCookie = req?.session?.token;
   const claims = await verifySession(sessionCookie);
   const db_user = await User.findOne({ uid: claims?.uid });
-  if (!claims) {
-    return res.redirect('/');
+  
+  if (claims && db_user) {
+    req.user = { ...claims, db_user };    
+    return next();
   }
-  req.user = { ...claims, db_user };
-  next();
+  return res.redirect('/');
 };
 
 export const ensureGuestSession = async (
@@ -37,7 +38,7 @@ export const checkTokenAuth = async (
 ) => {
   try {
     const token = (req.headers?.authtoken as string) ?? '';
-    const claims = await firebase.auth().verifyIdToken(token);
+    const claims = await firebase.auth().verifyIdToken(token);    
     next();
   } catch (err) {
     console.log('forbidden....', err);

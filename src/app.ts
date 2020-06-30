@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import morgan from 'morgan';
 import path from 'path';
+import methodOverride from 'method-override';
 import expressHandlebars from 'express-handlebars';
 import {
   formatDate,
@@ -14,7 +15,8 @@ import {
   truncate,
   editIcon,
   select,
-} from './views/helpers';
+  isUserStory,
+} from './views/helpers/template-helpers';
 
 import firebase from 'firebase-admin';
 import { connectDB } from './config/db';
@@ -33,6 +35,18 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Method override
+app.use(
+  methodOverride((req, res) => {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+      // look in urlencoded POST bodies and delete it
+      let method = req.body._method;
+      delete req.body._method;
+      return method;
+    }
+  })
+);
+
 // Session
 const MongoStore = connectMongo(session);
 const cookieName = process.env.SESSION_COOKIE_NAME || 'session';
@@ -47,7 +61,6 @@ app.use(
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
   })
 );
-
 
 // Logger
 if (process.env['NODE_ENV'] === 'development') {
@@ -74,6 +87,7 @@ app.engine(
       truncate: truncate,
       editIcon: editIcon,
       select: select,
+      isUserStory: isUserStory,
     },
   })
 );

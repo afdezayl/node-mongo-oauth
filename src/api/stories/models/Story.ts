@@ -3,7 +3,7 @@ import { Schema, model, Document } from 'mongoose';
 export interface IStory extends Document {
   title: string;
   body: string;
-  status: string;
+  status: 'public' | 'private';
   user: any;
   createdAt: Date;
 }

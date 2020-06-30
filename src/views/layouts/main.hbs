@@ -22,12 +22,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.14.1/ckeditor.js"
         integrity="sha256-bEIQpI72w9NJuIVhTLFUF2/8uxl0u5800r8ddViuv+o=" crossorigin="anonymous"></script>
     <script>
-        M.Sidenav.init(document.querySelector('.sidenav'));
-        M.FormSelect.init(document.querySelector('#status'));
+        const sidenav = document.querySelector('.sidenav');
+        if (sidenav) {
+            M.Sidenav.init(sidenav);
+        }
+        const select = document.querySelector('#status');
+        if (select) {
+            M.FormSelect.init(select);
+        }
 
-        CKEDITOR.replace('body', {
-            plugins: 'wysiwygarea, toolbar, basicstyles, link'
-        })
+        if (document.getElementById('body')) {
+            CKEDITOR.replace('body', {
+                plugins: 'wysiwygarea, toolbar, basicstyles, link'
+            });
+        }
     </script>
 </body>
 

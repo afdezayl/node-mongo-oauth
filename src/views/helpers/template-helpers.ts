@@ -20,13 +20,15 @@ export const stripTags = (input: string) => {
   return input.replace(/<(?:.|\n)*?>/gm, '');
 };
 
+export const isUserStory = (loggedUser: IUser, storyUser: IUser) => {
+  return storyUser._id.equals(loggedUser._id);
+};
 export const editIcon = (
-  storyAuthor: IUser,
-  loggedUser: IUser,
+  isLoggedUserStory: boolean,
   storyId: string,
   floating = true
 ) => {
-  if (storyAuthor._id.toString() == loggedUser._id.toString()) {
+  if (isLoggedUserStory) {
     if (floating) {
       return `<a href="/stories/edit/${storyId}" class="btn-floating halfway-fab blue"><i class="fas fa-edit fa-small"></i></a>`;
     } else {
@@ -37,12 +39,15 @@ export const editIcon = (
   }
 };
 
+// TODO: Think cleaner solution...
 export const select = (selected, options) => {
+  console.log(typeof options.fn());
   return options
-    .fn(this)
+    .fn()
     .replace(new RegExp(' value="' + selected + '"'), '$& selected="selected"')
     .replace(
       new RegExp('>' + selected + '</option>'),
       ' selected="selected"$&'
     );
 };
+
